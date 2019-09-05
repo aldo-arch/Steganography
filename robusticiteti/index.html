@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+     <title>Steg</title>
+</head>
+<h4 style="color:blue">Zgjidh nje imazh</h4>
+<p><input type="file" id="file" accept="image/*" /></p>
+<h4 style="color:blue">Zgjidh nivelin e robusticitetit</h4>
+<div><p>
+  <p><label for="m0"><input type="radio" name="mode" id="m0" value=0 checked="checked" /> Niveli 0</label></p>
+  <p><label for="m1"><input type="radio" name="mode" id="m1" value=1 /> Niveli 1</label></p>
+  <p><label for="m2"><input type="radio" name="mode" id="m2" value=2 /> Niveli 2</label></p>
+  <p><label for="m3"><input type="radio" name="mode" id="m3" value=3 /> Niveli 3</label></p>
+  <p><label for="m4"><input type="radio" name="mode" id="m4" value=4 /> Niveli 4</label></p>
+  <p><label for="m5"><input type="radio" name="mode" id="m5" value=5 /> Niveli 5</label></p>
+  
+</p></div>
+<h4 style="color:blue">Vendos nje fjalekalim</h4>
+<p>Fjalekalimi: <input type="text" id="pass" value="" placeholder="nuk ka fjalekalim"/></p>
+<h4 style="color:blue">Rezultate</h4>
+<p>
+<img id="resultimg" style="display:none" src="" />
+</p>
+<h4 style="color:blue">Vendos tekstin qe do fshehesh</h4>
+<p>
+<textarea id="msg" style="width:100%;height:50px;">Ky mesazh do te fshehet ne imazh</textarea>
+</p>
+<a href="javascript: writeIMG()" class="button">Fshehe mesazhin ne imazh</a>
+<p> </p>
+<p>ose:</p>
+<a href="javascript: readIMG()" class="button" style="background-image: url(images/main-bar1.png);"><span style="color:black">Ekstrakto mesazhin nga imazhi</span></a>
+
+<script type="text/javascript" src="javascripts/jquery.min.js"></script>
+<script type="text/javascript" src="javascripts/sha512.js"></script>
+<script type="text/javascript" src="javascripts/utf_8.js"></script>
+<script type="text/javascript" src="javascripts/crypto.js"></script>
+<script type="text/javascript" src="javascripts/readimg.js"></script>
+<script type="text/javascript" src="javascripts/setimg.js"></script>
+<script type="text/javascript" src="javascripts/main.js"></script>
+<script type="text/javascript">
+function writeIMG(){
+    $("#resultimg").hide();
+    $("#resultimg").attr('src','');
+    $("#result").html('Processing...');
+    function writefunc(){
+        var selectedVal = '';
+        var selected = $("input[type='radio'][name='mode']:checked");
+        if (selected.length > 0) {
+            selectedVal = selected.val();
+        }
+        var t = writeMsgToCanvas('canvas',$("#msg").val(),$("#pass").val(),selectedVal);
+        if(t!=null){ 
+            var myCanvas = document.getElementById("canvas");  
+            var image = myCanvas.toDataURL("image/png");    
+            $("#resultimg").attr('src',image);
+            $("#result").html('Success!');
+            $("#resultimg").show();
+        }
+    }
+    loadIMGtoCanvas('file','canvas',writefunc,500);
+}
+function readIMG(){
+    $("#resultimg").hide();
+    $("#result").html('Processing...');
+    function readfunc(){
+        var selectedVal = '';
+        var selected = $("input[type='radio'][name='mode']:checked");
+        if (selected.length > 0) {
+            selectedVal = selected.val();
+        }
+        var t= readMsgFromCanvas('canvas',$("#pass").val(),selectedVal);
+        if(t!=null){
+            t=t.split('&').join('&amp;');
+            t=t.split(' ').join('&nbsp;'); 
+            t=t.split('<').join('&lt;');
+            t=t.split('>').join('&gt;');
+            t=t.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            $("#result").html(t);
+        }else $("#result").html('Probleme ne ekstraktimin e mesazhit!');
+             
+    }
+    loadIMGtoCanvas('file','canvas',readfunc);
+}
+</script>
+
+  </body>
+</html>
